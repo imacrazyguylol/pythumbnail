@@ -3,7 +3,7 @@
 Generates thumbnail images for maryland osu (and hopefully later on, other osu scoreposting channels)
 
 ### TODO (yeah lotsa stuff):
-- generate config.json upon first user installation
+- [x] generate config.json upon first user installation
     - user input API stuff; client secret/key
     - default template info (later on)
 - merge old api stuff

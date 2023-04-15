@@ -1,10 +1,21 @@
-import os, sys, json
-import flet as flet
-from flet import * # all flet classes; Page, Row, etc.
-from PIL import Image
+# console only ver for now
+import os, sys, json, re
+from osuapi import getScore
+from imagegen import imageGen
 
-Config = json.load(open('config.json'))
+def main():
+    while True:
+        pattern = re.compile('https:\/\/osu\.ppy\.sh\/scores\/[a-zA-Z]+\/[0-9]+')
+        url = input('Enter the URL of the score: ')
+        if pattern.match(url):
+            break
+        else:
+            print('Invalid score URL.')
+            
+    score = getScore(url)
+    
+    print('Generating image...')
+    
+    
 
-def main(page: Page):
-    page.title = "pythumbnail" + Config["version"]
-    page.vertical_alignment = MainAxisAlignment.CENTER
+
