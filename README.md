@@ -3,7 +3,7 @@
 Generates thumbnail images for maryland osu (and hopefully later on, other osu scoreposting channels)
 
 ### TODO (yeah lotsa stuff):
-- [x] generate config.json upon first user installation
+- generate config.json upon first user installation
     - user input API stuff; client secret/key
     - default template info (later on)
 - merge old api stuff
@@ -15,7 +15,7 @@ Generates thumbnail images for maryland osu (and hopefully later on, other osu s
     - add controls for smaller adjustments
         - comment text field
 - create working thumbnail generation
-    - fetch info from api
+    - [x] fetch info from api
     - use that info in elements on the image
         - Map
             - Title
@@ -23,10 +23,10 @@ Generates thumbnail images for maryland osu (and hopefully later on, other osu s
             - Diffname
             - SR
             - BPM
-            - BKG (image)
+            - [x] BKG (image)
         - Player
             - Name
-            - PFP (image)
+            - [x] PFP (image)*
         - Score
             - Combo
             - Mods (use assets)
@@ -42,3 +42,5 @@ Generates thumbnail images for maryland osu (and hopefully later on, other osu s
         - Background blurring & position adjust
         - Placing assets
     - Export as either image or template json
+
+*more to be done
