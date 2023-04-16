@@ -15,7 +15,6 @@ def main():
     score = getScore(url)
     
     print('Generating image...')
+    imageGen(score)
     
-    
-
-
+main()

@@ -13,4 +13,4 @@ def getScore(url):
     # provide this yourself, functionality for lazer login may come tho
     api = Ossapi(config['ID'], config['SECRET'])
     scoreID = convertURL(url)
-    return score(scoreID[1], scoreID[0])
+    return api.score(scoreID[1], scoreID[0])
