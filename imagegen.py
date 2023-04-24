@@ -32,9 +32,24 @@ def __roundCorners(im, rad):
     return im
 
 def __modIcons(score: Score):
-    im = Image.new('RGBA', (556, 132))
+    if score.mods.value == 0: return False
     
+    modlist = []
+    for mod in score.mods.decompose():
+        modlist.append(mod.long_name().lower())
     
+    totalWidth = (137 * len(modlist)) - 1
+    
+    im = Image.new('RGBA', (totalWidth, 132))
+    
+    i = 0
+    for modname in modlist:
+        modIcon = Image.open(f'src/Mods/selection-mod-{modname}@2x.png')
+        im.paste(modIcon, (i * 137, 0))
+        i += 1 # python should have increment/decrement :(
+    
+    return im
+
 def imageGen(score: Score):
     # load font
     font = ImageFont.truetype('src/Font/NotoSans-Bold.ttf')
@@ -66,13 +81,20 @@ def imageGen(score: Score):
     # open ranking icon
     rankIcon = Image.open(f'src/Rankings/ranking-{score.rank.value}.png')
     
+    # generateasdasdasdasdasdasdasdasdsadasdsadasdasdasdasdasd mod icons
+    modIcons = __modIcons(score)
+    if modIcons:
+        x = (1920 / 2) - (modIcons.width / 2)
+        y = 624 # 1080/2 - 132/2, then moved down by 150px
+    
     # finally putting together the actual image
     output = Image.new('RGBA', (1920, 1080))
     
     output.paste(bkgImage, (0, 0))
     output.paste(rankIcon, (18, 138), rankIcon)
     output.paste(avatarImage, (832, 362), avatarImage) # 1920/2 - 256/2, 1080/2 - 256/2 to get upper left corner of centered image, then moved up by 50px
-    
+    if modIcons: output.paste(modIcons, (int(x), y), modIcons)
+        
     output.save('output/thumbnail.png')
     output.show()
     
