@@ -1,5 +1,5 @@
 import os, sys, json, re
-from ossapi import Ossapi, serialize_model
+from ossapi import Ossapi
 config = json.load(open('config.json'))
 
 def convertURL(url: str):
