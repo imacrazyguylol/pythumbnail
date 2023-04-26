@@ -2,6 +2,16 @@ import os, sys, json, shutil, requests
 from ossapi import Ossapi, Score
 from PIL import Image, ImageEnhance, ImageDraw, ImageFont, ImageColor, ImageFilter
 
+# might be a better way to do this
+defFont = {
+    128: ImageFont.truetype('src/Font/NotoSans-Bold.ttf', size=128),
+    96: ImageFont.truetype('src/Font/NotoSans-Bold.ttf', size=96),
+    64: ImageFont.truetype('src/Font/NotoSans-Bold.ttf', size=64),
+    32: ImageFont.truetype('src/Font/NotoSans-Bold.ttf', size=32),
+    16: ImageFont.truetype('src/Font/NotoSans-Bold.ttf', size=16),
+    12: ImageFont.truetype('src/Font/NotoSans-Bold.ttf', size=12),
+}
+
 # only gets main background from beatmapset
 def __dlImageFromBeatmapID(beatmapset_id):
     req = requests.get(f'https://assets.ppy.sh/beatmaps/{beatmapset_id}/covers/fullsize.jpg', stream=True)
@@ -51,9 +61,6 @@ def __modIcons(score: Score):
     return im
 
 def imageGen(score: Score):
-    # load font
-    font = ImageFont.truetype('src/Font/NotoSans-Bold.ttf')
-    
     # open background into bkgImage
     beatmapset_id = score.beatmapset.id
     __dlImageFromBeatmapID(beatmapset_id)
@@ -68,24 +75,27 @@ def imageGen(score: Score):
     bkgImage = bkgImage.resize((1920, 1080))
     bkgImage = bkgImage.filter(ImageFilter.GaussianBlur(3))
     
-    bkgImage.save('tempbkg.png')
+    # bkgImage.save('tempbkg.png')
     os.remove(os.path.abspath(os.getcwd()) + '/tempbkg.jpg')
     
     # round corners of avatar and locally save image, and remove jpg
     # avatarImage = avatarImage.resize((192, 192)) # only if 720p
     avatarImage = __roundCorners(avatarImage, 35)
     
-    avatarImage.save('tempavatar.png')
+    # avatarImage.save('tempavatar.png')
     os.remove(os.path.abspath(os.getcwd()) + '/tempavatar.jpg')
 
     # open ranking icon
     rankIcon = Image.open(f'src/Rankings/ranking-{score.rank.value}.png')
     
-    # generateasdasdasdasdasdasdasdasdsadasdsadasdasdasdasdasd mod icons
+    # generate mod icons
     modIcons = __modIcons(score)
     if modIcons:
         x = (1920 / 2) - (modIcons.width / 2)
         y = 624 # 1080/2 - 132/2, then moved down by 150px
+    
+    # Artist - Title
+    beatmapArtistTitle = ImageDraw.text(xy, f'{score.beatmapset.artist} - {score.beatmapset.title}', 'white', font, stroke_width=2.5, stroke_fill='black')
     
     # finally putting together the actual image
     output = Image.new('RGBA', (1920, 1080))
@@ -94,12 +104,26 @@ def imageGen(score: Score):
     output.paste(rankIcon, (18, 138), rankIcon)
     output.paste(avatarImage, (832, 362), avatarImage) # 1920/2 - 256/2, 1080/2 - 256/2 to get upper left corner of centered image, then moved up by 50px
     if modIcons: output.paste(modIcons, (int(x), y), modIcons)
-        
+    
+    # Text
+    draw = ImageDraw.Draw(output)
+    draw.font = ImageFont.truetype('src/Font/NotoSans-Bold.ttf')
+    
+    # Artist - Title; centered towards the top
+    length = draw.textsize(f'{score.beatmapset.artist} - {score.beatmapset.title}', font=defFont[64])
+    draw.text( ( (1920 - length)/2, 192 ), f'{score.beatmapset.artist} - {score.beatmapset.title}', fill='white', font=defFont[64], stroke_width=2, stroke_fill='black' )
+    
+    # [Difficulty]; smaller text, right under artist/title
+    length = draw.textsize(f'[{score.beatmap.version}]', font=defFont[32])
+    draw.text( ( (1920 - length)/2, 192 ), f'[{score.beatmap.version}]', fill='white', font=defFont[32], stroke_width=2, stroke_fill='black' )
+    
+    
+    
     output.save('output/thumbnail.png')
     output.show()
     
-    os.remove(os.path.abspath(os.getcwd()) + '/tempbkg.png')
-    os.remove(os.path.abspath(os.getcwd()) + '/tempavatar.png')
+    # os.remove(os.path.abspath(os.getcwd()) + '/tempbkg.png')
+    # os.remove(os.path.abspath(os.getcwd()) + '/tempavatar.png')
 
     # return path to final output
     
