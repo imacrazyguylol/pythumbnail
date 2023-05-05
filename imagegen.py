@@ -36,7 +36,6 @@ def __roundCorners(im, rad):
     im.putalpha(alpha)
     return im
 
-# TODO: make mod icons box smaller, but just enough (why must the Image.reduce() function only take integers whyyyyyyyyyyyyyyyy)
 def __modIcons(score: Score):
     if score.mods.value == 0: return False
     
@@ -44,14 +43,14 @@ def __modIcons(score: Score):
     for mod in score.mods.decompose():
         modlist.append(mod.long_name().lower())
     
-    totalWidth = (137 * len(modlist)) - 1
+    totalWidth = (91 * len(modlist)) - 1
     
-    im = Image.new('RGBA', (totalWidth, 132))
+    im = Image.new('RGBA', (totalWidth, 88))
     
     i = 0
     for modname in modlist:
-        modIcon = Image.open(f'src/Mods/selection-mod-{modname}@2x.png')
-        im.paste(modIcon, (i * 137, 0))
+        modIcon = Image.open(f'src/Mods/selection-mod-{modname}@2x.png').resize((90, 88))
+        im.paste(modIcon, (i * 91, 0))
         i += 1 # python should have increment/decrement :(
     
     return im
@@ -101,7 +100,7 @@ def imageGen(score: Score):
     # Text
     draw = ImageDraw.Draw(output)
     
-    # Might be worth saving the strings to another variable also to cut actions in half
+    # Might be worth saving the strings to another variable also to cut down on processing
     tempFont = getFont(56)
     
     # Artist - Title; centered towards the top
@@ -129,9 +128,9 @@ def imageGen(score: Score):
     draw.text( ( (1920 - length)/2 + 256, 360 ), f'{score.user().username}', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
     
     # #.##☆; sr
-    length = draw.textlength(f'{score.beatmap.difficulty_rating}☆', font=tempFont)
-    draw.text( ( (1920 - length)/2 + 256, 480 ), f'{score.beatmap.difficulty_rating}☆', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
-    
+    length = draw.textlength(f'{score.beatmap.difficulty_rating}☆', font=tempFont) # accounts for star placement as well
+    draw.text( ( (1920 - length)/2 + 256, 480 ), f'{score.beatmap.difficulty_rating}', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
+
     # ####x; combo
     length = draw.textlength(f'{score.max_combo}x', font=tempFont)
     draw.text( ( (1920 - length)/2 + 256, 600 ), f'{score.max_combo}x', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
