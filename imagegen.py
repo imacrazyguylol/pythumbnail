@@ -53,8 +53,8 @@ def __modIcons(score: Score):
         im.paste(modIcon, (i * 91, 0))
         i += 1 # python should have increment/decrement :(
     
-    return im
-
+    return im        
+        
 def imageGen(score: Score):
     # open background into bkgImage
     beatmapset_id = score.beatmapset.id
@@ -77,7 +77,6 @@ def imageGen(score: Score):
     # avatarImage = avatarImage.resize((192, 192)) # only if 720p
     avatarImage = __roundCorners(avatarImage, 35)
     
-    # avatarImage.save('tempavatar.png')
     os.remove(os.path.abspath(os.getcwd()) + '/tempavatar.jpg')
 
     # open ranking icon
@@ -105,41 +104,45 @@ def imageGen(score: Score):
     
     # Artist - Title; centered towards the top
     length = draw.textlength(f'{score.beatmapset.artist} - {score.beatmapset.title}', font=getFont(96))
-    draw.text( ( (1920 - length)/2, 142 ), f'{score.beatmapset.artist} - {score.beatmapset.title}', fill='white', font=getFont(96), stroke_width=2, stroke_fill='black' )
+    draw.text( ( (1920 - length)/2, 60 ), f'{score.beatmapset.artist} - {score.beatmapset.title}', fill='white', font=getFont(96), stroke_width=2, stroke_fill='black' )
     
     # [Difficulty]; smaller text, right under artist/title
     length = draw.textlength(f'[{score.beatmap.version}]', font=getFont(64))
-    draw.text( ( (1920 - length)/2, 262 ), f'[{score.beatmap.version}]', fill='white', font=getFont(64), stroke_width=2, stroke_fill='black' )
+    draw.text( ( (1920 - length)/2, 180 ), f'[{score.beatmap.version}]', fill='white', font=getFont(64), stroke_width=2, stroke_fill='black' )
     
     # ###pp; might be worth trying to make the pp number a diff color later
     length = draw.textlength(f'{round(score.pp)}pp', font=tempFont)
-    draw.text( ( (1920 - length)/2 - 256, 360 ), f'{round(score.pp)}pp', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
+    draw.text( ( 800 - length, 360 ), f'{round(score.pp)}pp', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
     
-    # ### BPM;
+    # ### BPM; subtracting length aligns text to right
     length = draw.textlength(f'{score.beatmap.bpm} BPM', font=tempFont)
-    draw.text( ( (1920 - length)/2 - 256, 480 ), f'{score.beatmap.bpm} BPM', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
+    draw.text( ( 800 - length, 480 ), f'{score.beatmap.bpm} BPM', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
     
     # ##.##%; acc
-    length = draw.textlength(f'{score.accuracy}%', font=tempFont)
-    draw.text( ( (1920 - length)/2 - 256, 600 ), f'{score.accuracy}%', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
-    
+    length = draw.textlength(f'{(score.accuracy * 100):.2f}%', font=tempFont)
+    draw.text( ( 800 - length, 600 ), f'{(score.accuracy * 100):.2f}%', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
+
     # Username;
-    length = draw.textlength(f'{score.user().username}', font=tempFont)
-    draw.text( ( (1920 - length)/2 + 256, 360 ), f'{score.user().username}', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
+    draw.text( ( 1120, 360 ), f'{score.user().username}', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
     
     # #.##☆; sr
-    length = draw.textlength(f'{score.beatmap.difficulty_rating}☆', font=tempFont) # accounts for star placement as well
-    draw.text( ( (1920 - length)/2 + 256, 480 ), f'{score.beatmap.difficulty_rating}', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
-
-    # ####x; combo
-    length = draw.textlength(f'{score.max_combo}x', font=tempFont)
-    draw.text( ( (1920 - length)/2 + 256, 600 ), f'{score.max_combo}x', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
+    length = draw.textlength(f'{score.beatmap.difficulty_rating}', font=tempFont) # accounts for star placement as well
+    draw.text( ( 1120, 480 ), f'{score.beatmap.difficulty_rating}', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
     
+    star = Image.open('src/SRstar.png').resize((64, 64)).convert('RGBA')
+    output.paste(star, (1124 + round(length), 480), star)
+    
+    # ####x; combo
+    draw.text( ( 1120, 600 ), f'{score.max_combo}x', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
+    
+    # comment;
+    comment = input("Enter the comment to be added. If none, leave blank. For multiline comments, use newline (\\n) characters. \n> ")
+    if comment:
+        length = draw.textlength(comment, font=getFont(80))
+        draw.text( ( (1920 - length)/2, 840), comment, fill='white', font=getFont(80), stroke_width=2, stroke_fill='black')
+             
     output.save('output/thumbnail.png')
     output.show()
     
-    # os.remove(os.path.abspath(os.getcwd()) + '/tempbkg.png')
-    # os.remove(os.path.abspath(os.getcwd()) + '/tempavatar.png')
-
     # return path to final output
     
