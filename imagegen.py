@@ -68,7 +68,7 @@ def imageGen(score: Score):
     
     # blur background slightly, resize to 1080p, and locally save image, and remove jpg
     bkgImage = bkgImage.resize((1920, 1080))
-    bkgImage = bkgImage.filter(ImageFilter.GaussianBlur(3))
+    bkgImage = bkgImage.filter(ImageFilter.GaussianBlur(4))
     
     # bkgImage.save('tempbkg.png')
     os.remove(os.path.abspath(os.getcwd()) + '/tempbkg.jpg')
@@ -80,7 +80,7 @@ def imageGen(score: Score):
     os.remove(os.path.abspath(os.getcwd()) + '/tempavatar.jpg')
 
     # open ranking icon
-    rankIcon = Image.open(f'src/Rankings/ranking-{score.rank.value}.png')
+    rankIcon = Image.open(f'src/Rankings/ranking-{score.rank.value}.png').resize((480, 626))
     
     # generate mod icons
     modIcons = __modIcons(score)
@@ -100,20 +100,27 @@ def imageGen(score: Score):
     draw = ImageDraw.Draw(output)
     
     # Might be worth saving the strings to another variable also to cut down on processing
-    tempFont = getFont(56)
+    tempFont = getFont(72)
     
     # Artist - Title; centered towards the top
-    length = draw.textlength(f'{score.beatmapset.artist} - {score.beatmapset.title}', font=getFont(96))
-    draw.text( ( (1920 - length)/2, 60 ), f'{score.beatmapset.artist} - {score.beatmapset.title}', fill='white', font=getFont(96), stroke_width=2, stroke_fill='black' )
+    s = 96
+    length = draw.textlength(f'{score.beatmapset.artist} - {score.beatmapset.title}', font=getFont(s))
+    
+    # Prevents text from extending past screen boundaries by scaling it down until it fits
+    while length > 1820:
+        s = int(s - (s / length)) # im such a genius fr
+        length = draw.textlength(f'{score.beatmapset.artist} - {score.beatmapset.title}', font=getFont(s))
+    draw.text( ( (1920 - length)/2, 60 ), f'{score.beatmapset.artist} - {score.beatmapset.title}', fill='white', font=getFont(s), stroke_width=2, stroke_fill='black' )
     
     # [Difficulty]; smaller text, right under artist/title
     length = draw.textlength(f'[{score.beatmap.version}]', font=getFont(64))
-    draw.text( ( (1920 - length)/2, 180 ), f'[{score.beatmap.version}]', fill='white', font=getFont(64), stroke_width=2, stroke_fill='black' )
+    draw.text( ( (1920 - length)/2, 70 + s ), f'[{score.beatmap.version}]', fill='white', font=getFont(64), stroke_width=2, stroke_fill='black' )
     
     # ###pp; might be worth trying to make the pp number a diff color later
-    length = draw.textlength(f'{round(score.pp)}pp', font=tempFont)
-    draw.text( ( 800 - length, 360 ), f'{round(score.pp)}pp', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
-    
+    if score.beatmapset.status.value == 1:
+        length = draw.textlength(f'{round(score.pp)}pp', font=tempFont)
+        draw.text( ( 800 - length, 360 ), f'{round(score.pp)}pp', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
+        
     # ### BPM; subtracting length aligns text to right
     length = draw.textlength(f'{score.beatmap.bpm} BPM', font=tempFont)
     draw.text( ( 800 - length, 480 ), f'{score.beatmap.bpm} BPM', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
@@ -129,14 +136,14 @@ def imageGen(score: Score):
     length = draw.textlength(f'{score.beatmap.difficulty_rating}', font=tempFont) # accounts for star placement as well
     draw.text( ( 1120, 480 ), f'{score.beatmap.difficulty_rating}', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
     
-    star = Image.open('src/SRstar.png').resize((64, 64)).convert('RGBA')
+    star = Image.open('src/SRstar.png').resize((80, 80)).convert('RGBA')
     output.paste(star, (1124 + round(length), 480), star)
     
     # ####x; combo
     draw.text( ( 1120, 600 ), f'{score.max_combo}x', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
     
     # comment;
-    comment = input("Enter the comment to be added. If none, leave blank. For multiline comments, use newline (\\n) characters. \n> ")
+    comment = input("Enter the comment to be added. If none, leave blank.\n> ")
     if comment:
         length = draw.textlength(comment, font=getFont(80))
         draw.text( ( (1920 - length)/2, 840), comment, fill='white', font=getFont(80), stroke_width=2, stroke_fill='black')
