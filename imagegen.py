@@ -55,6 +55,19 @@ def __modIcons(score: Score):
     
     return im        
         
+def __dropShadow(output, coords: tuple, text, textLength, font):
+    im = Image.new('RGBA', (int(textLength) + 20, 1000))
+    draw = ImageDraw.Draw(im)
+    
+    draw.text( (10,0), text, fill='black', font=font)
+    
+    im = im.filter(ImageFilter.GaussianBlur(7))
+    
+    output.paste(im, (coords[0] - 10, coords[1]), im)
+
+def __textLen(draw, text, font):
+    return int(draw.textlength(text, font))
+
 def imageGen(score: Score):
     # open background into bkgImage
     beatmapset_id = score.beatmapset.id
@@ -104,49 +117,71 @@ def imageGen(score: Score):
     
     # Artist - Title; centered towards the top
     s = 96
-    length = draw.textlength(f'{score.beatmapset.artist} - {score.beatmapset.title}', font=getFont(s))
+    length = __textLen(draw, f'{score.beatmapset.artist} - {score.beatmapset.title}', font=getFont(s))
     
     # Prevents text from extending past screen boundaries by scaling it down until it fits
     while length > 1820:
         s = int(s - (s / length)) # im such a genius fr
-        length = draw.textlength(f'{score.beatmapset.artist} - {score.beatmapset.title}', font=getFont(s))
-    draw.text( ( (1920 - length)/2, 60 ), f'{score.beatmapset.artist} - {score.beatmapset.title}', fill='white', font=getFont(s), stroke_width=2, stroke_fill='black' )
+        length = __textLen(draw, f'{score.beatmapset.artist} - {score.beatmapset.title}', font=getFont(s))
+    
+    # drop shadow
+    coords = ( int((1920 - length)/2), 60 )
+    
+    __dropShadow( output, coords, f'{score.beatmapset.artist} - {score.beatmapset.title}', length, getFont(s))
+    draw.text( coords, f'{score.beatmapset.artist} - {score.beatmapset.title}', fill='white', font=getFont(s), stroke_width=2, stroke_fill='black' )
     
     # [Difficulty]; smaller text, right under artist/title
-    length = draw.textlength(f'[{score.beatmap.version}]', font=getFont(64))
-    draw.text( ( (1920 - length)/2, 70 + s ), f'[{score.beatmap.version}]', fill='white', font=getFont(64), stroke_width=2, stroke_fill='black' )
+    length = __textLen(draw, f'[{score.beatmap.version}]', font=getFont(64))
+    coords = ( int( (1920 - length)/2), 70 + s )
+    
+    __dropShadow( output, coords, f'[{score.beatmap.version}]', length, getFont(64))
+    draw.text( coords, f'[{score.beatmap.version}]', fill='white', font=getFont(64), stroke_width=2, stroke_fill='black' )
     
     # ###pp; might be worth trying to make the pp number a diff color later
+    # also maybe do an 'if ranked' pp value
     if score.beatmapset.status.value == 1:
-        length = draw.textlength(f'{round(score.pp)}pp', font=tempFont)
+        length = __textLen(draw, f'{round(score.pp)}pp', font=tempFont)
+        
+        __dropShadow(output, ( 800 - length, 360 ), f'{round(score.pp)}pp', length, tempFont)
         draw.text( ( 800 - length, 360 ), f'{round(score.pp)}pp', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
         
     # ### BPM; subtracting length aligns text to right
-    length = draw.textlength(f'{score.beatmap.bpm} BPM', font=tempFont)
+    length = __textLen(draw, f'{score.beatmap.bpm} BPM', font=tempFont)
+    
+    __dropShadow(output, ( 800 - length, 480 ), f'{score.beatmap.bpm} BPM', length, tempFont)
     draw.text( ( 800 - length, 480 ), f'{score.beatmap.bpm} BPM', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
     
     # ##.##%; acc
-    length = draw.textlength(f'{(score.accuracy * 100):.2f}%', font=tempFont)
+    length = __textLen(draw, f'{(score.accuracy * 100):.2f}%', font=tempFont)
+    
+    __dropShadow(output, ( 800 - length, 600 ), f'{(score.accuracy * 100):.2f}%', length, tempFont)
     draw.text( ( 800 - length, 600 ), f'{(score.accuracy * 100):.2f}%', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
 
     # Username;
+    __dropShadow(output, (1120, 360), f'{score.user().username}', 1000, tempFont)
     draw.text( ( 1120, 360 ), f'{score.user().username}', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
     
     # #.##☆; sr
-    length = draw.textlength(f'{score.beatmap.difficulty_rating}', font=tempFont) # accounts for star placement as well
+    length = __textLen(draw, f'{score.beatmap.difficulty_rating}', font=tempFont) # accounts for star placement as well
+    
+    __dropShadow(output, ( 1120, 480 ), f'{score.beatmap.difficulty_rating}', length, tempFont)
     draw.text( ( 1120, 480 ), f'{score.beatmap.difficulty_rating}', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
     
     star = Image.open('src/SRstar.png').resize((80, 80)).convert('RGBA')
     output.paste(star, (1124 + round(length), 480), star)
     
     # ####x; combo
+    __dropShadow(output, ( 1120, 600 ), f'{score.max_combo}x', 1000, tempFont)
     draw.text( ( 1120, 600 ), f'{score.max_combo}x', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
     
     # comment;
     comment = input("Enter the comment to be added. If none, leave blank.\n> ")
     if comment:
-        length = draw.textlength(comment, font=getFont(80))
-        draw.text( ( (1920 - length)/2, 840), comment, fill='white', font=getFont(80), stroke_width=2, stroke_fill='black')
+        length = __textLen(draw, comment, font=getFont(80))
+        coords = ( int((1920 - length)/2), 840 )
+        
+        __dropShadow(output, coords, comment, length, getFont(80))
+        draw.text(coords, comment, fill='white', font=getFont(80), stroke_width=2, stroke_fill='black')
              
     output.save('output/thumbnail.png')
     output.show()
