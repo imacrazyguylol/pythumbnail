@@ -139,7 +139,7 @@ def imageGen(score: Score):
     
     # ###pp; might be worth trying to make the pp number a diff color later
     if score.pp != None:
-        text = f'{round(score.pp)}pp' if score.beatmapset.status != 1 else f'{round(score.pp)}pp (if ranked)'
+        text = f'{round(score.pp)}pp' if score.beatmapset.status == 1 else f'{round(score.pp)}pp (if ranked)'
 
         length = __textLen(draw, f'{round(score.pp)}pp', font=tempFont)
             
