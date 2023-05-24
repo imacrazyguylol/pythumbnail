@@ -138,13 +138,14 @@ def imageGen(score: Score):
     draw.text( coords, f'[{score.beatmap.version}]', fill='white', font=getFont(64), stroke_width=2, stroke_fill='black' )
     
     # ###pp; might be worth trying to make the pp number a diff color later
-    # also maybe do an 'if ranked' pp value
-    if score.beatmapset.status.value == 1:
+    if score.pp != None:
+        text = f'{round(score.pp)}pp' if score.beatmapset.status != 1 else f'{round(score.pp)}pp (if ranked)'
+
         length = __textLen(draw, f'{round(score.pp)}pp', font=tempFont)
-        
+            
         __dropShadow(output, ( 800 - length, 360 ), f'{round(score.pp)}pp', length, tempFont)
         draw.text( ( 800 - length, 360 ), f'{round(score.pp)}pp', fill='white', font=tempFont, stroke_width=2, stroke_fill='black')
-        
+            
     # ### BPM; subtracting length aligns text to right
     length = __textLen(draw, f'{score.beatmap.bpm} BPM', font=tempFont)
     
