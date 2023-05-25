@@ -42,7 +42,7 @@ def main():
             print('Enter a value.')
         else:
             break
-    score.__setattr__('accuracy', float(acc)) # fix this for decimal accs
+    score.__setattr__('accuracy', float(acc)/100)
     
     while True:
         combo = input('Enter the combo value of the score.\n> ')
