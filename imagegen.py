@@ -1,5 +1,6 @@
 import os, sys, json, shutil, requests
 from ossapi import Ossapi, Score
+from datetime import datetime
 from PIL import Image, ImageEnhance, ImageDraw, ImageFont, ImageColor, ImageFilter
 
 # get font with size because yeah
@@ -184,7 +185,7 @@ def imageGen(score: Score):
         __dropShadow(output, coords, comment, length, getFont(80))
         draw.text(coords, comment, fill='white', font=getFont(80), stroke_width=2, stroke_fill='black')
              
-    output.save('output/thumbnail.png')
+    output.save(f'output/{datetime.now()}_{score.user().username}_{score.beatmapset.title}.png')
     output.show()
     
     # return path to final output
