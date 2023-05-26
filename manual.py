@@ -4,7 +4,7 @@ from ossapi import Score, enums, mod
 from osuapi import getUser, getBeatmap, convertURL
 from imagegen import imageGen
     
-def main():
+def manual():
     score = Score()
     
     pattern = re.compile('https:\/\/osu\.ppy\.sh\/(b|beatmaps|beatmapsets)\/+')
@@ -68,4 +68,4 @@ def main():
     print('Generating image...')
     imageGen(score)
     
-main()
+manual()

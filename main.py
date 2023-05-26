@@ -2,6 +2,7 @@
 import os, sys, json, re
 from osuapi import getScore
 from imagegen import imageGen
+from manual import manual
 
 def main():
     while True:
@@ -16,5 +17,8 @@ def main():
     
     print('Generating image...')
     imageGen(score)
-    
-main()
+
+if sys.argv[0].lower() == '-m' or sys.argv[0].lower() == '--manual':
+    manual()
+else:
+    main()
