@@ -38,8 +38,11 @@ def getUser(url: str):
     
     return api.user(uid)
 
-def getBeatmap(url: str):
+def getBeatmap(url:str=None, beatmapHash:str=None):
     api = Ossapi(config['ID'], config['SECRET'])
-    bid = convertURL(url)[0]
     
-    return api.beatmap(bid)
+    if beatmapHash:
+        return api.beatmap(beatmapHash)
+    else:
+        bid = convertURL(url)[0]
+        return api.beatmap(bid)

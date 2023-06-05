@@ -3,6 +3,7 @@ import os, sys, json, re
 from osuapi import getScore
 from imagegen import imageGen
 from manual import manual
+from byreplay import replay
 
 def main():
     while True:
@@ -20,5 +21,7 @@ def main():
 
 if sys.argv[0].lower() == '-m' or sys.argv[0].lower() == '--manual':
     manual()
+elif sys.argv[0].lower() == '-r' or sys.argv[0].lower() == '--replay':
+    replay()
 else:
     main()
