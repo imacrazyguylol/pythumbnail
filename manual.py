@@ -29,6 +29,7 @@ def manual():
             break
         else:
             print('Invalid user URL.')
+            
     score.__setattr__('user_id', convertURL(userurl)[0])
     score.__setattr__('_user', getUser(userurl)) # weird
     

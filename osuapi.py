@@ -1,9 +1,9 @@
 import os, sys, json, re
-from ossapi import Ossapi
+from ossapi import Ossapi, User, Beatmap
 
 config = json.load(open('config.json'))
 
-def _convertURLold(url: str):
+def __convertURLold(url: str): # depracated
     idIndex = url.index("/", 29);
     modeIndex = url.index("/", 25);
     scoreid = url[idIndex + 1:];
@@ -32,17 +32,20 @@ def getScore(url):
     scoreID = convertURL(url)
     return api.score(scoreID[1], scoreID[0])
 
-def getUser(url: str):
+def getUser(url:str=None, username:str=None) -> User:
     api = Ossapi(config['ID'], config['SECRET'])
-    uid = convertURL(url)[0]
     
-    return api.user(uid)
+    if username:
+        return api.user(username)
+    else:
+        uid = convertURL(url)[0]
+        return api.user(uid)
 
-def getBeatmap(url:str=None, beatmapHash:str=None):
+def getBeatmap(url:str=None, beatmapHash:str=None) -> Beatmap: # I think it's this, might be different
     api = Ossapi(config['ID'], config['SECRET'])
     
     if beatmapHash:
-        return api.beatmap(beatmapHash)
+        return api.beatmap(checksum=beatmapHash)
     else:
         bid = convertURL(url)[0]
         return api.beatmap(bid)
