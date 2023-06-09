@@ -41,7 +41,7 @@ def getUser(url:str=None, username:str=None) -> User:
         uid = convertURL(url)[0]
         return api.user(uid)
 
-def getBeatmap(url:str=None, beatmapHash:str=None) -> Beatmap: # I think it's this, might be different
+def getBeatmap(url:str=None, beatmapHash:str=None) -> Beatmap:
     api = Ossapi(config['ID'], config['SECRET'])
     
     if beatmapHash:

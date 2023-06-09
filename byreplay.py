@@ -78,7 +78,7 @@ def replay():
     score.__setattr__('user_id', user.id)
     score.__setattr__('_user', user)
     
-    score.__setattr__('accuracy', float( replayAcc(replay) ) / 100)
+    score.__setattr__('accuracy', float( replayAcc(replay) ))
     score.__setattr__('max_combo', int(replay.max_combo))
     score.__setattr__('rank', replayGrade(replay))
     score.__setattr__('mods', mod.Mod(replay.mods)) # ughhhhhhhhhhhhhhhhh bitwise enums fix this shit
