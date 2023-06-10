@@ -79,6 +79,11 @@ def __textLen(draw, text, font):
     return int(draw.textlength(text, font))
 
 
+# TODO: use osu-tools to calculate scaled star rating with mods
+def __scaledDifficulty(score: Score):
+    if score.mods.value == 0: return score.beatmap.difficulty_rating
+
+
 def imageGen(score: Score):
     # open background into bkgImage
     beatmapset_id = score.beatmapset.id
@@ -219,14 +224,14 @@ def imageGen(score: Score):
               stroke_fill='black')
 
     # #.##☆; sr
-    length = __textLen(draw,
-                       f'{score.beatmap.difficulty_rating}',
+    starRating = score.beatmap.difficulty_rating  # __scaledDifficulty(score)
+
+    length = __textLen(draw, f'{starRating}',
                        font=tempFont)  # accounts for star placement as well
 
-    __dropShadow(output, (1120, 480), f'{score.beatmap.difficulty_rating}',
-                 length, tempFont)
+    __dropShadow(output, (1120, 480), f'{starRating}', length, tempFont)
     draw.text((1120, 480),
-              f'{score.beatmap.difficulty_rating}',
+              f'{starRating}',
               fill='white',
               font=tempFont,
               stroke_width=2,
@@ -258,10 +263,12 @@ def imageGen(score: Score):
                   stroke_width=2,
                   stroke_fill='black')
 
-    output.save(
-        f'output/{datetime.now()}_{score.user().username}_{score.beatmapset.title}.png'
-    )
+    filename = f'{score.user().username}_{score.beatmapset.title}'
+
+    if os.path.exists(f'{os.path.abspath(os.getcwd())}output/{filename}'):
+        os.remove(f'{os.path.abspath(os.getcwd())}output/{filename}')
+
+    output.save(f'output/{score.user().username}_{score.beatmapset.title}.png')
     output.show()
 
-    # return path to final output
-
+    return f'output/{filename}'
