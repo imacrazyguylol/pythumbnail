@@ -17,6 +17,11 @@ def main():
             print('Invalid score URL.')
 
     score = getScore(url)
+    
+    if score.mods.value != 0:
+        sr = input('Enter the mod weighted star rating of the beatmap.\n> ')
+        if sr:
+            score.beatmap.__setattr__('difficulty_rating', sr)
 
     print('Generating image...')
 

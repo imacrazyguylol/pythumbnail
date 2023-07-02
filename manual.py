@@ -74,7 +74,9 @@ def manual():
     score.__setattr__('mods', mod.Mod(mods))
 
     print('Generating image...')
-    imageGen(score)
+    
+    outputpath = imageGen(score)
+    print(f'image saved as {outputpath}')
 
 
 # manual()
