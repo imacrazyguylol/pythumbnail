@@ -11,3 +11,4 @@ releases
 thumbnail.png
 .vscode
 local
+*.osr

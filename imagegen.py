@@ -1,5 +1,6 @@
 import os, sys, subprocess, json, shutil, requests
 from ossapi import Ossapi, Score
+from rosu_pp_py import Beatmap, Calculator
 from datetime import datetime
 from PIL import Image, ImageEnhance, ImageDraw, ImageFont, ImageColor, ImageFilter
 
@@ -80,7 +81,6 @@ def __textLen(draw, text, font):
 
 
 # TODO: calculate scaled star rating with mods
-# im gonna have to do this shit myself oml
 def __scaledDifficulty(score: Score):
     if score.mods.value == 0: return score.beatmap.difficulty_rating
 

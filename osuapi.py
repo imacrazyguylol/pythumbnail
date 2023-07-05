@@ -4,14 +4,6 @@ from ossapi import Ossapi, User, Beatmap
 config = json.load(open('config.json'))
 
 
-def __convertURLold(url: str):  # depracated
-    idIndex = url.index("/", 29)
-    modeIndex = url.index("/", 25)
-    scoreid = url[idIndex + 1:]
-    mode = url[modeIndex + 1:idIndex]
-    return [scoreid, mode]
-
-
 # returns ID and mode if available from a beatmap, user, or score URL
 def convertURL(url: str):
     suffix = url[19:]
