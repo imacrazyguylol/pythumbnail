@@ -1,6 +1,6 @@
 test.py
 psdtest.py
-config.json
+*.json
 output
 tempbkg.jpg
 tempavatar.jpg
@@ -12,3 +12,6 @@ thumbnail.png
 .vscode
 local
 *.osr
+build
+dist
+*.spec

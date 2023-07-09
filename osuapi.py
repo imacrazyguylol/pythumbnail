@@ -1,8 +1,19 @@
 import os, sys, json, re
 from ossapi import Ossapi, User, Beatmap
 
-config = json.load(open('config.json'))
+try:
+    config = json.load(open('config.json'))
+    path = config['beatmaps_path']
+except KeyError:
+    print('Select the your osu! beatmaps folder')
+    beatmaps_path = filedialog.askdirectory()
+    
+    config['beatmaps_path'] = beatmaps_path
 
+    with open('config.json', 'w') as f:
+        f.write(json.dumps(config))
+
+    config = json.load(open('config.json'))
 
 # returns ID and mode if available from a beatmap, user, or score URL
 def convertURL(url: str):
