@@ -1,13 +1,15 @@
-import os, sys, subprocess, json, shutil, requests
+import os, sys, subprocess, json, shutil, requests, tkinter
+import rosu_pp_py as rosu
+from zipfile import *
 from ossapi import Ossapi, Score
-from rosu_pp_py import Beatmap, Calculator
+from tkinter import filedialog
 from datetime import datetime
 from PIL import Image, ImageEnhance, ImageDraw, ImageFont, ImageColor, ImageFilter
 
 # get font with size because yeah
 # possible problem might be that it has to go through the file system more than I'd like, could be an area of slowdown
 # solution would either be to find a way to open the font into a vartiable and change the size during use or somehow cache the file upon first use, maybe it even already does that
-getFont = lambda x: ImageFont.truetype('src/Font/NotoSans-Bold.ttf', size=x)
+getFont = lambda x: ImageFont.truetype('assets/Font/NotoSans-Bold.ttf', size=x)
 
 
 # only gets main background from beatmapset
@@ -58,7 +60,7 @@ def __modIcons(score: Score):
     i = 0
     for modname in modlist:
         modIcon = Image.open(
-            f'src/Mods/selection-mod-{modname}@2x.png').resize((90, 88))
+            f'assets/Mods/selection-mod-{modname}@2x.png').resize((90, 88))
         im.paste(modIcon, (i * 91, 0))
         i += 1  # python should have increment/decrement :(
 
@@ -80,9 +82,40 @@ def __textLen(draw, text, font):
     return int(draw.textlength(text, font))
 
 
-# TODO: calculate scaled star rating with mods
-def __scaledDifficulty(score: Score):
+def calculateSR(score: Score):
     if score.mods.value == 0: return score.beatmap.difficulty_rating
+
+    config = json.load(open('config.json'))
+    calc = rosu.Calculator(mods=score.mods.value)
+
+    for (dirpath, dirnames, filenames) in os.walk(config['beatmaps_path']):
+        for f in filenames:
+            if f == f'{score.beatmapset.artist} - {score.beatmapset.title} ({score.beatmapset.creator}) [{score.beatmap.version}].osu':
+                beatmap = rosu.Beatmap(content=f.read())
+                f'{calc.difficulty(beatmap).stars:.2f}'
+    
+    print('Required beatmap not found in beatmaps folder. Select the .osz or .osu file.')
+    while True:
+        path = filedialog.askopenfilename()
+
+        if type(path) is tuple:
+            print('exiting without calculating star rating...')
+            return score.beatmap.difficulty_rating
+        elif path.endswith('.osz'):
+            with ZipFile(path) as z:
+                f = z.open(
+                    f'{score.beatmapset.artist} - {score.beatmapset.title} ({score.beatmapset.creator}) [{score.beatmap.version}].osu'
+                )
+            break
+        elif path.endswith('.osu'):
+            f = open(path)
+            break
+        else:
+            print('invalid file.')
+            continue
+    
+    beatmap = rosu.Beatmap(content=f.read())
+    return f'{calc.difficulty(beatmap).stars:.2f}'
 
 
 def imageGen(score: Score):
@@ -111,7 +144,7 @@ def imageGen(score: Score):
 
     # open ranking icon
     rankIcon = Image.open(
-        f'src/Rankings/ranking-{score.rank.value}.png').resize((480, 626))
+        f'assets/Rankings/ranking-{score.rank.value}.png').resize((480, 626))
 
     # generate mod icons
     modIcons = __modIcons(score)
@@ -225,7 +258,7 @@ def imageGen(score: Score):
               stroke_fill='black')
 
     # #.##☆; sr
-    starRating = score.beatmap.difficulty_rating  # __scaledDifficulty(score)
+    starRating = calculateSR(score)  # __scaledDifficulty(score)
 
     length = __textLen(draw, f'{starRating}',
                        font=tempFont)  # accounts for star placement as well
@@ -238,7 +271,7 @@ def imageGen(score: Score):
               stroke_width=2,
               stroke_fill='black')
 
-    star = Image.open('src/SRstar.png').resize((80, 80)).convert('RGBA')
+    star = Image.open('assets/SRstar.png').resize((80, 80)).convert('RGBA')
     output.paste(star, (1124 + round(length), 480), star)
 
     # ####x; combo
