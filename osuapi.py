@@ -39,6 +39,17 @@ except FileNotFoundError:
         'If you have an API v2 ID and secret, enter them in the config file.')
 
 
+if config['SECRET'] == '':
+    print('working???')
+    api = Ossapi(config['ID'],
+                 config['SECRET'],
+                 redirect_uri='http://localhost:4444/',
+                 grant='authorization',
+                 domain=Domain.OSU)
+else:
+    api = Ossapi(config['ID'], config['SECRET'])
+
+
 # returns ID and mode if available from a beatmap, user, or score URL
 def convertURL(url: str):
     suffix = url[19:]
