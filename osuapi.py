@@ -1,5 +1,14 @@
-import os, sys, json, re
+import os, sys, json, re, tkinter
 from ossapi import Ossapi, User, Beatmap
+from tkinter import filedialog
+
+tkinter.Tk().withdraw()
+
+
+def getBeatmapsPath():
+    print('Select your beatmaps directory.')
+    return filedialog.askdirectory()
+
 
 try:
     config = json.load(open('config.json'))
@@ -7,7 +16,7 @@ try:
 except KeyError:
     print('Select the your osu! beatmaps folder')
     beatmaps_path = filedialog.askdirectory()
-    
+
     config['beatmaps_path'] = beatmaps_path
 
     with open('config.json', 'w') as f:
@@ -19,7 +28,7 @@ except FileNotFoundError:
         contents = {
             'version': '1.4',
             'beatmaps_path': getBeatmapsPath(),
-            'ID': 16965, # I think this is necessary but also ok to push with
+            'ID': 16965,  # I think this is necessary but also ok to push with
             'SECRET': ''
         }
 
