@@ -14,6 +14,21 @@ except KeyError:
         f.write(json.dumps(config))
 
     config = json.load(open('config.json'))
+except FileNotFoundError:
+    with open('config.json', 'x') as f:
+        contents = {
+            'version': '1.4',
+            'beatmaps_path': getBeatmapsPath(),
+            'ID': 16965, # I think this is necessary but also ok to push with
+            'SECRET': ''
+        }
+
+        f.write(json.dumps(contents, indent=4))
+
+    config = json.load(open('config.json'))
+    print(
+        'If you have an API v2 ID and secret, enter them in the config file.')
+
 
 # returns ID and mode if available from a beatmap, user, or score URL
 def convertURL(url: str):
