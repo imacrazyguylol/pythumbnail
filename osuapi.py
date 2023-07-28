@@ -1,5 +1,5 @@
 import os, sys, json, re, tkinter
-from ossapi import Ossapi, User, Beatmap
+from ossapi import Ossapi, User, Beatmap, Domain
 from tkinter import filedialog
 
 tkinter.Tk().withdraw()
@@ -28,7 +28,8 @@ except FileNotFoundError:
         contents = {
             'version': '1.4',
             'beatmaps_path': getBeatmapsPath(),
-            'ID': 16965,  # I think this is necessary but also ok to push with
+            # 'ID': 16965,  # I think this is necessary but also ok to push with
+            'ID': 0,
             'SECRET': ''
         }
 
@@ -37,15 +38,19 @@ except FileNotFoundError:
     config = json.load(open('config.json'))
     print(
         'If you have an API v2 ID and secret, enter them in the config file.')
+    sys.exit() # prevents it from continuing and erroring out.
 
 
-if config['SECRET'] == '':
-    print('working???')
-    api = Ossapi(config['ID'],
-                 config['SECRET'],
-                 redirect_uri='http://localhost:4444/',
-                 grant='authorization',
-                 domain=Domain.OSU)
+if config['SECRET'] == '' or config['ID'] == 0:
+    print(
+        'If you have an API v2 ID and secret, enter them in the config file.')
+    sys.exit() # prevents it from continuing and erroring out.
+
+    #api = Ossapi(config['ID'],
+    #             config['SECRET'],
+    #             redirect_uri='http://localhost:4444/',
+    #             grant='authorization',
+    #             domain=Domain.OSU)
 else:
     api = Ossapi(config['ID'], config['SECRET'])
 
