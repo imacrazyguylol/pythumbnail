@@ -15,6 +15,4 @@ local
 *.osr
 build
 dist
-hooks
-*.spec
 top1k.py
