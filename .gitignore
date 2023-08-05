@@ -1,6 +1,7 @@
 test.py
 psdtest.py
 *.json
+*.sh
 output
 tempbkg.jpg
 tempavatar.jpg
@@ -14,5 +15,6 @@ local
 *.osr
 build
 dist
+hooks
 *.spec
 top1k.py

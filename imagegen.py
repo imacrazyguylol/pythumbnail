@@ -9,7 +9,7 @@ from PIL import Image, ImageEnhance, ImageDraw, ImageFont, ImageColor, ImageFilt
 # get font with size because yeah
 # possible problem might be that it has to go through the file system more than I'd like, could be an area of slowdown
 # solution would either be to find a way to open the font into a vartiable and change the size during use or somehow cache the file upon first use, maybe it even already does that
-getFont = lambda x: ImageFont.truetype('assets/Font/NotoSans-Bold.ttf', size=x)
+getFont = lambda x: ImageFont.truetype(__tempPath('assets/Font/NotoSans-Bold.ttf'), size=x)
 
 
 # only gets main background from beatmapset
@@ -60,7 +60,7 @@ def __modIcons(score: Score):
     i = 0
     for modname in modlist:
         modIcon = Image.open(
-            f'assets/Mods/selection-mod-{modname}@2x.png').resize((90, 88))
+            __tempPath( f'assets/Mods/selection-mod-{modname}@2x.png') ).resize( (90, 88) )
         im.paste(modIcon, (i * 91, 0))
         i += 1  # python should have increment/decrement :(
 
@@ -82,6 +82,17 @@ def __textLen(draw, text, font):
     return int(draw.textlength(text, font))
 
 
+# https://stackoverflow.com/a/51061279/20501327
+def __tempPath(relative_path):
+    """ returns a path that works for the compiled code using sys._MEIPASS """
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
 def calculateSR(score: Score):
     if score.mods.value == 0: return score.beatmap.difficulty_rating
 
@@ -93,8 +104,10 @@ def calculateSR(score: Score):
             if f == f'{score.beatmapset.artist} - {score.beatmapset.title} ({score.beatmapset.creator}) [{score.beatmap.version}].osu':
                 beatmap = rosu.Beatmap(content=f.read())
                 f'{calc.difficulty(beatmap).stars:.2f}'
-    
-    print('Required beatmap not found in beatmaps folder. Select the .osz or .osu file.')
+
+    print(
+        'Required beatmap not found in beatmaps folder. Select the .osz or .osu file.'
+    )
     while True:
         path = filedialog.askopenfilename()
 
@@ -113,7 +126,7 @@ def calculateSR(score: Score):
         else:
             print('invalid file.')
             continue
-    
+
     beatmap = rosu.Beatmap(content=f.read())
     return f'{calc.difficulty(beatmap).stars:.2f}'
 
@@ -144,7 +157,7 @@ def imageGen(score: Score):
 
     # open ranking icon
     rankIcon = Image.open(
-        f'assets/Rankings/ranking-{score.rank.value}.png').resize((480, 626))
+        __tempPath(f'assets/Rankings/ranking-{score.rank.value}.png') ).resize( (480, 626) )
 
     # generate mod icons
     modIcons = __modIcons(score)
@@ -271,7 +284,7 @@ def imageGen(score: Score):
               stroke_width=2,
               stroke_fill='black')
 
-    star = Image.open('assets/SRstar.png').resize((80, 80)).convert('RGBA')
+    star = Image.open( __tempPath('assets/SRstar.png') ).resize((80, 80)).convert('RGBA')
     output.paste(star, (1124 + round(length), 480), star)
 
     # ####x; combo
@@ -297,12 +310,17 @@ def imageGen(score: Score):
                   stroke_width=2,
                   stroke_fill='black')
 
+
     filename = f'{score.user().username}_{score.beatmapset.title}'
 
+    if not os.path.exists('./output'):
+        os.makedirs('./output')
+        
     if os.path.exists(f'{os.path.abspath(os.getcwd())}output/{filename}'):
         os.remove(f'{os.path.abspath(os.getcwd())}output/{filename}')
 
-    output.save(f'output/{score.user().username}_{score.beatmapset.title}.png')
+    output.save(f'output/{filename}.png')
     output.show()
+
 
     return f'output/{filename}'
