@@ -36,13 +36,13 @@ except FileNotFoundError:
         f.write(json.dumps(contents, indent=4))
 
     config = json.load(open('config.json'))
-    print(
+    input(
         'If you have an API v2 ID and secret, enter them in the config file.')
     sys.exit() # prevents it from continuing and erroring out.
 
 
 if config['SECRET'] == '' or config['ID'] == 0:
-    print(
+    input(
         'If you have an API v2 ID and secret, enter them in the config file.')
     sys.exit() # prevents it from continuing and erroring out.
 
