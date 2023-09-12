@@ -16,3 +16,6 @@ local
 build
 dist
 top1k.py
+*.spec
+*.psd
+hooks

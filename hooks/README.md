@@ -1,1 +1,1 @@
-This folder isn't necessary for runtime
+This folder isn't necessary for runtime, only for compiling (so you can ignore this)
