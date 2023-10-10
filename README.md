@@ -4,7 +4,7 @@
 <p>Also, it currently can't do any specfic changes to the style or formatting outside of what is hard-coded, among some other user unfriendly aspects of it.</p>
 <p>However, if at your disposal, the linux executable should work. Please submit a pull request or DM me on discord if you experience any other issues not mentioned, or you DON'T experience any of the issues I HAVE mentioned. The latter is more intriguing.</p>
 
-
+---
 
 # pythumbnail
 
